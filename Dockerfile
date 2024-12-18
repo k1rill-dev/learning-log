@@ -6,19 +6,26 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
+
 WORKDIR /app
 
 
 COPY requirements.txt .
 
 
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ./start.sh .
+RUN sed -i 's/\r$//g' ./start.sh
+RUN chmod +x ./start.sh
 
 
 COPY . .
 
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+EXPOSE 8002
 
-EXPOSE 8000
+ENTRYPOINT ["./start.sh"]
